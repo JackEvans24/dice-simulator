@@ -816,11 +816,11 @@ MonoBehaviour:
   diePrefab: {fileID: 8145328154686496861, guid: 4321ebad5b4e5b147a50b54295c3e592,
     type: 3}
   diceStartPos: {fileID: 851360691}
-  rotationMin: -10
-  rotationMax: 10
+  diceStartRotation: {x: 45, y: 0, z: 45}
+  dieRotation: {x: 5, y: 0, z: -5}
   throwVelocity: {x: 2, y: 10, z: 2}
   minMagnitude: 0.05
-  waitTime: 1
+  settleWaitTime: 0.4
   cameraOffset: {x: 0, y: 3, z: -1.4}
   cameraRotation: {x: 65, y: 0, z: 0}
   cameraMoveDuration: 2

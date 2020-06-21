@@ -7,10 +7,8 @@ public class GameManager : MonoBehaviour
     [Header("Pre-Throw")]
     public Rigidbody diePrefab;
     public Transform diceStartPos;
-    private Vector3 diceStartRotation = new Vector3(45, 0, 45);
-    public float rotationMin;
-    public float rotationMax;
-    private Vector3 dieRotation;
+    public Vector3 diceStartRotation;
+    public Vector3 dieRotation;
 
     [Header("Throw")]
     public Vector3 throwVelocity;
@@ -42,7 +40,6 @@ public class GameManager : MonoBehaviour
         originalCameraRotation = mainCamera.rotation.eulerAngles;
 
         currentDie = GameObject.Instantiate(diePrefab, diceStartPos.position, Quaternion.Euler(diceStartRotation));
-        SetDieRotation();
 
         canThrow = true;
     }
@@ -50,6 +47,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetButtonDown("Cancel"))
+            Application.Quit();
+
         if (thrown)
             CheckDieIsAtRest();
         else if (!throwing && !thrown)
@@ -134,18 +134,9 @@ public class GameManager : MonoBehaviour
         waitingToSettle = false;
         currentSettleWaitTime = 0;
 
-        SetDieRotation();
-
         Tween(currentDie.gameObject, diceStartPos.position, diceStartRotation, cameraMoveDuration)
             .setOnComplete(() => currentDie.constraints = RigidbodyConstraints.FreezePosition);
 
         throwing = thrown = cameraMoved = false;
     }
-
-    private void SetDieRotation() =>
-        dieRotation = new Vector3(
-            UnityEngine.Random.Range(rotationMin, rotationMax),
-            UnityEngine.Random.Range(rotationMin, rotationMax),
-            UnityEngine.Random.Range(rotationMin, rotationMax)
-        );
 }

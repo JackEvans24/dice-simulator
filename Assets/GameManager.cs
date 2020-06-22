@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Cancel"))
+        if (canThrow && Input.GetButtonDown("Cancel"))
             Application.Quit();
 
         if (thrown)

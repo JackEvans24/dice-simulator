@@ -4,8 +4,10 @@ public class GameManager : MonoBehaviour
 {
     public Transform mainCamera;
 
+    [Header("Dice")]
+    public Rigidbody[] diePrefabs;
     [Header("Pre-Throw")]
-    public Rigidbody diePrefab;
+    private int diePrefabIndex;
     public Transform diceStartPos;
     public Vector3 diceStartRotation;
     public float dieXRotation;
@@ -39,31 +41,55 @@ public class GameManager : MonoBehaviour
     private Vector3 originalCameraPos;
     private Vector3 originalCameraRotation;
 
+    [Header("UI")]
+    public Canvas preThrowCanvas;
+    public Canvas postThrowCanvas;
+
     void Start()
     {
         originalCameraPos = mainCamera.position;
         originalCameraRotation = mainCamera.rotation.eulerAngles;
 
-        currentDie = GameObject.Instantiate(diePrefab, diceStartPos.position, Quaternion.Euler(diceStartRotation));
+        InstantiateDie();
 
         canThrow = true;
+    }
+
+    void InstantiateDie()
+    {
+        if (currentDie != null)
+        {
+            var dice = GameObject.FindGameObjectsWithTag("Die");
+            foreach (var die in dice)
+                GameObject.Destroy(die);
+        }
+
+        var diePrefab = diePrefabs[diePrefabIndex];
+        currentDie = GameObject.Instantiate(diePrefab, diceStartPos.position, Quaternion.Euler(diceStartRotation));
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (canThrow && Input.GetButtonDown("Cancel"))
+        if (canThrow && Input.GetButtonDown("Quit"))
             Application.Quit();
 
         if (thrown)
             CheckDieIsAtRest();
         else if (!throwing && !thrown)
         {
-            if (canThrow && Input.GetButtonDown("Jump"))
+            if (canThrow)
             {
-                throwing = true;
-                canThrow = false;
-                return;
+                if (Input.GetButtonDown("Jump"))
+                {
+                    throwing = true;
+                    canThrow = false;
+                    return;
+                }
+                else if (Input.GetButtonDown("Next") || Input.GetButtonDown("Previous"))
+                {
+                    ChangeDie(Input.GetButtonDown("Next"));
+                }
             }
 
             CalculateRotation();
@@ -77,6 +103,18 @@ public class GameManager : MonoBehaviour
 
         if (canReset && Input.GetButtonDown("Jump"))
             Reset();
+    }
+
+    void ChangeDie(bool next)
+    {
+        diePrefabIndex += next ? 1 : -1;
+
+        if (diePrefabIndex >= diePrefabs.Length)
+            diePrefabIndex = 0;
+        else if (diePrefabIndex < 0)
+            diePrefabIndex = diePrefabs.Length - 1;
+
+        InstantiateDie();
     }
 
     void CalculateRotation()
@@ -113,6 +151,8 @@ public class GameManager : MonoBehaviour
 
         thrown = true;
 
+        preThrowCanvas.gameObject.SetActive(false);
+
         currentDie.constraints = RigidbodyConstraints.None;
         currentDie.AddForce(throwVelocity, ForceMode.VelocityChange);
     }
@@ -128,7 +168,11 @@ public class GameManager : MonoBehaviour
     private void MoveCamera()
     {
         Tween(mainCamera.gameObject, currentDie.position + cameraOffset, cameraRotation, cameraMoveDuration)
-            .setOnComplete(() => canReset = true);
+            .setOnComplete(() => {
+                postThrowCanvas.gameObject.SetActive(true);
+
+                canReset = true;
+            });
 
         cameraMoved = true;
     }
@@ -150,8 +194,14 @@ public class GameManager : MonoBehaviour
 
         canReset = false;
 
+        postThrowCanvas.gameObject.SetActive(false);
+
         Tween(mainCamera.gameObject, originalCameraPos, originalCameraRotation, cameraMoveDuration)
-            .setOnComplete(() => canThrow = true);
+            .setOnComplete(() => {
+                preThrowCanvas.gameObject.SetActive(true);
+
+                canThrow = true;
+            });
 
         waitingToSettle = false;
         currentSettleWaitTime = 0;

@@ -8,7 +8,12 @@ public class GameManager : MonoBehaviour
     public Rigidbody diePrefab;
     public Transform diceStartPos;
     public Vector3 diceStartRotation;
-    public Vector3 dieRotation;
+    public float dieXRotation;
+    public float dieYRotation;
+    private float dieZRotation;
+    public Unity.Mathematics.float2 dieZRotationBounds;
+    public float dieZRotationIncrement;
+    private bool dieRotationAscending;
 
     [Header("Throw")]
     public Vector3 throwVelocity;
@@ -60,6 +65,8 @@ public class GameManager : MonoBehaviour
                 canThrow = false;
                 return;
             }
+
+            CalculateRotation();
         }
 
         if (waitingToSettle && currentSettleWaitTime <= settleWaitTime)
@@ -72,11 +79,26 @@ public class GameManager : MonoBehaviour
             Reset();
     }
 
+    void CalculateRotation()
+    {
+        if (dieRotationAscending)
+            dieZRotation += dieZRotationIncrement;
+        else
+            dieZRotation -= dieZRotationIncrement;
+
+        if (dieZRotation <= dieZRotationBounds.x || dieZRotation >= dieZRotationBounds.y)
+            dieRotationAscending = !dieRotationAscending;
+    }
+
     void FixedUpdate()
     {
         if (!throwing)
         {
-            currentDie.angularVelocity = dieRotation;
+            currentDie.angularVelocity = new Vector3(
+                dieXRotation,
+                dieYRotation,
+                dieZRotation
+            );
         }
         else if (!thrown)
         {

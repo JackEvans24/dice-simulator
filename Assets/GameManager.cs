@@ -10,12 +10,14 @@ public class GameManager : MonoBehaviour
     private int diePrefabIndex;
     public Transform diceStartPos;
     public Vector3 diceStartRotation;
-    public float dieXRotation;
-    public float dieYRotation;
-    private float dieZRotation;
+    public Vector3 dieRotation;
+    public Unity.Mathematics.float2 dieXRotationBounds;
+    private bool dieXRotationAscending;
+    public Unity.Mathematics.float2 dieYRotationBounds;
+    private bool dieYRotationAscending;
     public Unity.Mathematics.float2 dieZRotationBounds;
-    public float dieZRotationIncrement;
-    private bool dieRotationAscending;
+    public float rotationIncrement;
+    private bool dieZRotationAscending;
 
     [Header("Throw")]
     public Vector3 throwVelocity;
@@ -52,6 +54,8 @@ public class GameManager : MonoBehaviour
 
         InstantiateDie();
 
+        RandomiseAngularVelocity();
+
         canThrow = true;
     }
 
@@ -66,6 +70,15 @@ public class GameManager : MonoBehaviour
 
         var diePrefab = diePrefabs[diePrefabIndex];
         currentDie = GameObject.Instantiate(diePrefab, diceStartPos.position, Quaternion.Euler(diceStartRotation));
+    }
+
+    void RandomiseAngularVelocity()
+    {
+        var dieXRotation = Random.Range(dieXRotationBounds.x, dieXRotationBounds.y);
+        var dieYRotation = Random.Range(dieYRotationBounds.x, dieYRotationBounds.y);
+        var dieZRotation = Random.Range(dieZRotationBounds.x, dieZRotationBounds.y);
+
+        dieRotation = new Vector3(dieXRotation, dieYRotation, dieZRotation);
     }
 
     // Update is called once per frame
@@ -119,24 +132,46 @@ public class GameManager : MonoBehaviour
 
     void CalculateRotation()
     {
-        if (dieRotationAscending)
-            dieZRotation += dieZRotationIncrement;
+        Debug.Log("calc");
+
+        var dieXRotation = dieRotation.x;
+        var dieYRotation = dieRotation.y;
+        var dieZRotation = dieRotation.z;
+
+        if (dieXRotationAscending)
+            dieXRotation += rotationIncrement;
         else
-            dieZRotation -= dieZRotationIncrement;
+            dieXRotation -= rotationIncrement;
+
+        if (dieXRotation <= dieXRotationBounds.x || dieXRotation >= dieXRotationBounds.y)
+            dieXRotationAscending = !dieXRotationAscending;
+
+
+        if (dieYRotationAscending)
+            dieYRotation += rotationIncrement;
+        else
+            dieYRotation -= rotationIncrement;
+
+        if (dieYRotation <= dieYRotationBounds.x || dieYRotation >= dieYRotationBounds.y)
+            dieYRotationAscending = !dieYRotationAscending;
+
+
+        if (dieZRotationAscending)
+            dieZRotation += rotationIncrement;
+        else
+            dieZRotation -= rotationIncrement;
 
         if (dieZRotation <= dieZRotationBounds.x || dieZRotation >= dieZRotationBounds.y)
-            dieRotationAscending = !dieRotationAscending;
+            dieZRotationAscending = !dieZRotationAscending;
+
+        dieRotation = new Vector3(dieXRotation, dieYRotation, dieZRotation);
     }
 
     void FixedUpdate()
     {
         if (!throwing)
         {
-            currentDie.angularVelocity = new Vector3(
-                dieXRotation,
-                dieYRotation,
-                dieZRotation
-            );
+            currentDie.angularVelocity = dieRotation;
         }
         else if (!thrown)
         {
@@ -208,6 +243,8 @@ public class GameManager : MonoBehaviour
 
         Tween(currentDie.gameObject, diceStartPos.position, diceStartRotation, cameraMoveDuration)
             .setOnComplete(() => currentDie.constraints = RigidbodyConstraints.FreezePosition);
+
+        RandomiseAngularVelocity();
 
         throwing = thrown = cameraMoved = false;
     }

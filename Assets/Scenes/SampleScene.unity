@@ -1326,12 +1326,16 @@ MonoBehaviour:
   - {fileID: 6821405971678803940, guid: f8e3de818c2977947a3ac8cedfa1be46, type: 3}
   diceStartPos: {fileID: 851360691}
   diceStartRotation: {x: 45, y: 0, z: 45}
-  dieXRotation: 5
-  dieYRotation: -5
+  dieXRotationBounds:
+    x: 0
+    y: 5
+  dieYRotationBounds:
+    x: 0
+    y: 5
   dieZRotationBounds:
     x: -10
     y: 10
-  dieZRotationIncrement: 0.2
+  rotationIncrement: 0
   throwVelocity: {x: 2, y: 8, z: 2}
   minMagnitude: 0.05
   settleWaitTime: 0.4

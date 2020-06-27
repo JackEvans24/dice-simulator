@@ -5,7 +5,8 @@ ModelImporter:
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: No Name
+    2100000: Black
+    2100002: Gold
     2300000: //RootNode
     3300000: //RootNode
     4300000: Solid

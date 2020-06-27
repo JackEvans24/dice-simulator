@@ -1321,21 +1321,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 534669905}
   diePrefabs:
-  - {fileID: 6828723169939897380, guid: b321ca9e5260f6e4eb0ebfe9a0711ef1, type: 3}
-  - {fileID: 8145328154686496861, guid: 4321ebad5b4e5b147a50b54295c3e592, type: 3}
-  - {fileID: 6821405971678803940, guid: f8e3de818c2977947a3ac8cedfa1be46, type: 3}
+  - {fileID: 1048183531888699774, guid: b321ca9e5260f6e4eb0ebfe9a0711ef1, type: 3}
+  - {fileID: 8733695078989068755, guid: 4321ebad5b4e5b147a50b54295c3e592, type: 3}
+  - {fileID: 1381920414208323107, guid: f8e3de818c2977947a3ac8cedfa1be46, type: 3}
+  - {fileID: 7085266223706120800, guid: dd00634ad136a8848b65ecfef13fc033, type: 3}
+  - {fileID: 3518642039121066483, guid: 1f72ba992694a38499cc6d8fdb0c220a, type: 3}
+  - {fileID: 5068194849572709624, guid: aaf88e31a12b61f4baec63a59987b792, type: 3}
   diceStartPos: {fileID: 851360691}
   diceStartRotation: {x: 45, y: 0, z: 45}
+  dieRotation: {x: 0, y: 0, z: 0}
   dieXRotationBounds:
-    x: 0
+    x: -5
     y: 5
   dieYRotationBounds:
-    x: 0
+    x: -5
     y: 5
   dieZRotationBounds:
     x: -10
     y: 10
-  rotationIncrement: 0
+  rotationIncrement: 0.2
   throwVelocity: {x: 2, y: 8, z: 2}
   minMagnitude: 0.05
   settleWaitTime: 0.4

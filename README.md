@@ -1,4 +1,4 @@
-# DiceSimulator
+# Dice Simulator
 
 A program that simulates dice rolls
 
